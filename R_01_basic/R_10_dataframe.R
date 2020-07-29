@@ -44,3 +44,7 @@ ncol(df)
 df <- df[-nrow(df),]
 df
 # sort or order
+sort(df$Age)
+ranks <- order(df$Age)
+ranks
+df$Age

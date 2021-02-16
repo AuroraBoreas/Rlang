@@ -8,4 +8,4 @@ src_file <- "R-00-exercise/Data/Crime_Data.csv"
 
 # load
 
-dfCrime <- read_csv
+dfCrime <- read_csv(src_file, col_names=TRUE)

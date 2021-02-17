@@ -1,0 +1,58 @@
+---
+title: "create_markdown_with_R"
+author: "ZL"
+date: "2/17/2021"
+output: pdf_document
+---
+
+## include libraries
+
+```{r}
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(ggmap)
+
+```
+
+## data prep
+
+```{r}
+
+myLocation <- "Carlifornia"
+myMap <- get_map(myLocation,zoom=6)
+ggmap(myMap)
+
+```
+
+
+## using REmap()
+
+```{r}
+library(REmap)
+geoData <- get_geo_position(unique(demoC[demoC==demoC]))
+remapB(markLineData = demoC,geoData = geoData)
+
+```
+
+
+## wildfire study
+
+```{r}
+
+library(tidyverse)
+
+src <- "/Users/zhangliang/Desktop/R-00-exercise/Data/StudyArea_SmallFile.csv"
+
+df <- read_csv(src,
+               col_types=list(UNIT=col_character()),
+               col_names=TRUE) %>%
+      select(STATE,YEAR_,TOTALACRES,DLATITUDE,DLONGITUDE) %>%
+      filter(TOTALACRES>=1000 & STATE=="California")
+
+head(df)
+
+df %>% ggplot(aes(x=YEAR_, y=log(TOTALACRES))) +
+       geom_col(fill='red')
+```

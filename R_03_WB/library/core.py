@@ -14,6 +14,7 @@ Author
 Changelog
 - v0.01, initial build
 - v0.02, refactor
+- v0.03, add fieds: ser, Level to the final output *.csv files
 
 """
 
@@ -27,19 +28,22 @@ DataFrame = NewType('DataFrame', pd.DataFrame)
 Path = NewType('Path', str)
 
 class PBM_Wrangler:
+    ser_idx:int           = 3
+    fn_sep:str            = '_'
     fn_prefix:str         = 'PBM_'
     fn_ext:str            = 'CSV'
     head_x:str            = 'x(calc)'
     head_y:str            = 'y(calc)'
-    head_xy:List[str]     = [head_x, head_y]
+    head_ser:str          = 'ser'
     head_picmode:str      = 'picmode'
     head_level:str        = 'LEVEL'
+    head_xy:List[str]     = [head_x, head_y, head_ser, head_level]
     head_u:str            = 'u'
     head_v:str            = 'v'
-    head_uv:List[str]     = [head_u, head_v]
+    head_uv:List[str]     = [head_u, head_v, head_ser, head_level]
     dummy_rows:List[int]  = [i for i in range(33)] + [92, 93] + [152, 153] + [212, 213] + [272, 273] # may change overtime..
     levels:int            = 57
-    temps:List[str]       = ['COOL'] * levels + ['NEUTRAL'] * levels + ['WARM'] * levels + ['EXPERT1'] * levels + ['PHOTO'] * levels
+    temp_names:List[str]  = ['COOL'] * levels + ['NEUTRAL'] * levels + ['WARM'] * levels + ['EXPERT1'] * levels + ['PHOTO'] * levels
     ires:List[int]        = [12, 23, 34, 45]
     color_temps:List[str] = ['COOL', 'NEUTRAL', 'WARM', 'EXPERT1']
 
@@ -77,25 +81,28 @@ class PBM_Wrangler:
 
     def __read(self, pbm_file:Path)->None:
         df:DataFrame = pd.read_csv(pbm_file, skiprows=self.dummy_rows, engine='python')
-        df[self.head_picmode] = self.temps
+        df[self.head_picmode] = self.temp_names
+        df[self.head_ser] = self.__getSer(pbm_file)
         self.df_temp = df[np.isin(df[self.head_level], self.ires)]
 
+    def __getSer(self, pbm_file:Path)->str:
+        return pathlib.Path(pbm_file).name.split(self.fn_sep)[self.ser_idx]
+
     def __categorize(self, color_temp:str, dst_df:List[DataFrame])->None:
-        df:DataFrame = self.df_temp[self.df_temp[self.head_picmode] == color_temp].loc[:, [self.head_x, self.head_y]]
+        df:DataFrame = self.df_temp[self.df_temp[self.head_picmode] == color_temp].loc[:, self.head_xy]
         df[self.head_u] = df.apply(lambda df: self.xy2u(df[self.head_x], df[self.head_y]), axis=1)
         df[self.head_v] = df.apply(lambda df: self.xy2v(df[self.head_x], df[self.head_y]), axis=1)
         fixed_df = df.loc[:, self.head_uv]
         dst_df.append(fixed_df)
-    
+
     def __reset(self, how:str=None)->None:
         self.df_temp = None
         if how == 'all':
-            for df in self.df_cts:
-                df.clear()
+            for df in self.df_cts: df.clear()
 
     def __wrangle(self)->None:
         for color_temp, df_ct in zip(self.color_temps, self.df_cts):
-            if df_ct: self.__categorize(color_temp, df_ct)
+            self.__categorize(color_temp, df_ct)
         self.__reset()
 
     def __concat(self, color_temp:str, src_df:List[DataFrame])->None:
@@ -105,7 +112,7 @@ class PBM_Wrangler:
     def __tocsv(self)->None:
         for color_temp, df_ct in zip(self.color_temps, self.df_cts):
             if df_ct: self.__concat(color_temp, df_ct)
-        
+
     @timer
     def work(self)->None:
         logging.info('start working..')

@@ -186,3 +186,9 @@ p3 + p4
     caption = 'Disclaimer: Non of these plots are insightful @ZL',
     tag_levels = 'A'
   )
+
+ggsave('Rplot_wb.tiff',
+       width = 10,
+       height = 10,
+       device = 'tiff',
+       dpi = 400)

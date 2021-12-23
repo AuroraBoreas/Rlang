@@ -4,7 +4,7 @@
 
 #require(reticulate)
 require(ggplot2)
-
+require(patchwork)
 ### create clean data
 #reticulate::use_python('D:/DevEnv/WPy32-3741/python-3.7.4/python.exe')
 #reticulate::install_miniconda()
@@ -64,7 +64,7 @@ df.expert1 <- read.csv("./src/EXPERT1.csv")
 
 ### plot
 plot.wb <- function(df.temp, temp, temp.minor.x, temp.minor.y, temp.jnd1, temp.jnd2, temp.jnd3) {
-  ggplot(df.temp) +
+  p <- ggplot(df.temp) +
     geom_point(aes(x=u,
                    y=v),
                colour = "purple",
@@ -77,13 +77,13 @@ plot.wb <- function(df.temp, temp, temp.minor.x, temp.minor.y, temp.jnd1, temp.j
   #                  ylim=c(0.4247, 0.4467)) +
     scale_x_continuous(minor_breaks = temp.minor.x) +
     scale_y_continuous(minor_breaks = temp.minor.y) +
-    labs(title=gsub(' ', '', paste('White Balance::', temp)),
-         subtitle = "SPEC: u\'v\', 0.010 (3JND)",
+    labs(title=gsub(' ', '', paste('WB::', temp)),
          x="u\'",
          y="v\'") +
     theme(panel.grid.major.x = element_blank(),
           panel.grid.major.y = element_blank(),
-          axis.text.x = element_text(angle=90)) +
+          axis.text.x = element_text(angle=90),
+          plot.title = element_text(size=10)) +
     geom_path(data=temp.jnd1,
                aes(x=du,
                    y=dv),
@@ -106,10 +106,11 @@ plot.wb <- function(df.temp, temp, temp.minor.x, temp.minor.y, temp.jnd1, temp.j
 #            device = png,
 #            width = 800,
 #            height = 800)
+  return(p)
 }
 
 ### plot WB cool
-plot.wb(df.cool,
+p1 <- plot.wb(df.cool,
         'Cool',
         cool.minor.x,
         cool.minor.y, 
@@ -118,7 +119,7 @@ plot.wb(df.cool,
         cool.jnd3)
 
 ### plot WB neutral
-plot.wb(df.neutral,
+p2 <- plot.wb(df.neutral,
         'Neutral',
         neutral.minor.x,
         neutral.minor.y, 
@@ -128,7 +129,7 @@ plot.wb(df.neutral,
 
 
 ### plot WB warm
-plot.wb(df.warm,
+p3 <- plot.wb(df.warm,
         'Warm',
         warm.minor.x,
         warm.minor.y, 
@@ -137,7 +138,7 @@ plot.wb(df.warm,
         warm.jnd3)
 
 ### plot WB expert1
-plot.wb(df.expert1,
+p4 <- plot.wb(df.expert1,
         'Expert1',
         expert1.minor.x,
         expert1.minor.y, 
@@ -145,3 +146,12 @@ plot.wb(df.expert1,
         expert1.jnd2,
         expert1.jnd3)
 
+### layout
+(p1 | p2) /
+  (p3 | p4) +
+  plot_annotation(
+    title = '【SSVE Pmod/SET】 White Balance Confirmation',
+    subtitle = '規格: u\'v\', 0.010 (3JND)',
+    caption = 'Disclaimer: Non of these plots are insightful @ZL',
+    tag_levels = 'A'
+  )

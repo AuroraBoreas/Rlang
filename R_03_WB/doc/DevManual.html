@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DevManual.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="ssve-white-balance-data-visualization">SSVE White Balance Data Visualization</h1>
+<p>20 Dec 2021, SSVE started a trial which is an activity to write White Balance data into Pmod T-Con board.</p>
+<p>To ensure effectiveness, PE wanna check log data compared with JND.</p>
+<p>This small VBA project helps to accelerate the whole process.</p>
+<h2 id="author">Author</h2>
+<p>SSVE TVQA member <code>@Zhang Liang</code>, 20211220</p>
+<h2 id="changelog">Changelog</h2>
+<ul>
+<li>v0.01, initial build</li>
+<li>v0.02, fix visualization bug (screw non-standard charts..)</li>
+<li>v0.03, resize <code>named range</code> dynamically</li>
+<li>v0.04, create <code>Python3</code> + <code>Rlang</code> solution for scaling data and workload;</li>
+</ul>
+<h2 id="diagram">Diagram</h2>
+<p>the following the diagram of the whole process</p>
+<img src=".\static\WB_Data_Visualization.png">
+<h1 id="solution-01">Solution 01</h1>
+<p>toolkits: <code>VB.NET</code> + <code>Excel</code> + <code>VBA</code>;</p>
+<p>using this approach when workload and dataset are small (&lt;= 1,000);</p>
+<h2 id="implementation">Implementation</h2>
+<p>some core functionality as follows.</p>
+<pre class="hljs"><code><div>
+<span class="hljs-keyword">Private</span> <span class="hljs-keyword">Sub</span> read_PBM_csv(<span class="hljs-keyword">ByVal</span> csv_path <span class="hljs-keyword">As</span> <span class="hljs-built_in">String</span>, <span class="hljs-keyword">ByRef</span> dstWB <span class="hljs-keyword">As</span> Workbook)
+    <span class="hljs-comment"><span class="hljs-doctag">'''</span> read data from a PBM csv log files at SSVE @ZL, 20211220</span>
+    <span class="hljs-keyword">Const</span> col_x <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">5</span>
+    <span class="hljs-keyword">Const</span> col_y <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">6</span>
+    <span class="hljs-keyword">Const</span> idx_x <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">Const</span> idx_y <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">1</span>
+    <span class="hljs-keyword">Const</span> sheet_no <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">1</span>
+    <span class="hljs-keyword">Dim</span> cool, neutral, warm, expert1, color_temps
+    
+    cool = Array(<span class="hljs-number">47</span>, <span class="hljs-number">58</span>, <span class="hljs-number">69</span>, <span class="hljs-number">80</span>)
+    neutral = Array(<span class="hljs-number">107</span>, <span class="hljs-number">118</span>, <span class="hljs-number">129</span>, <span class="hljs-number">140</span>)
+    warm = Array(<span class="hljs-number">167</span>, <span class="hljs-number">178</span>, <span class="hljs-number">189</span>, <span class="hljs-number">200</span>)
+    expert1 = Array(<span class="hljs-number">227</span>, <span class="hljs-number">238</span>, <span class="hljs-number">249</span>, <span class="hljs-number">260</span>)
+    
+    color_temps = Array(cool, neutral, warm, expert1)
+    
+    <span class="hljs-keyword">Dim</span> src_wb <span class="hljs-keyword">As</span> Workbook
+    <span class="hljs-keyword">Dim</span> src_ws <span class="hljs-keyword">As</span> Worksheet
+    
+    <span class="hljs-keyword">Set</span> src_wb = GetObject(csv_path)
+    <span class="hljs-keyword">Set</span> src_ws = src_wb.Worksheets(sheet_no)
+
+    <span class="hljs-keyword">Dim</span> i <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span>
+    <span class="hljs-keyword">Const</span> wsn_cool <span class="hljs-keyword">As</span> <span class="hljs-built_in">String</span> = <span class="hljs-string">"Cool"</span>
+    <span class="hljs-keyword">Const</span> wsn_neutral <span class="hljs-keyword">As</span> <span class="hljs-built_in">String</span> = <span class="hljs-string">"Neutral"</span>
+    <span class="hljs-keyword">Const</span> wsn_warm <span class="hljs-keyword">As</span> <span class="hljs-built_in">String</span> = <span class="hljs-string">"Warm"</span>
+    <span class="hljs-keyword">Const</span> wsn_expert1 <span class="hljs-keyword">As</span> <span class="hljs-built_in">String</span> = <span class="hljs-string">"Expert1"</span>
+    <span class="hljs-keyword">Dim</span> dstWS_cool <span class="hljs-keyword">As</span> Worksheet: <span class="hljs-keyword">Set</span> dstWS_cool = dstWB.Sheets(wsn_cool)
+    <span class="hljs-keyword">Dim</span> dstWS_neutral <span class="hljs-keyword">As</span> Worksheet: <span class="hljs-keyword">Set</span> dstWS_neutral = dstWB.Sheets(wsn_neutral)
+    <span class="hljs-keyword">Dim</span> dstWS_warm <span class="hljs-keyword">As</span> Worksheet: <span class="hljs-keyword">Set</span> dstWS_warm = dstWB.Sheets(wsn_warm)
+    <span class="hljs-keyword">Dim</span> dstWS_expert1 <span class="hljs-keyword">As</span> Worksheet: <span class="hljs-keyword">Set</span> dstWS_expert1 = dstWB.Sheets(wsn_expert1)
+
+    <span class="hljs-keyword">Const</span> lb <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">Const</span> ub <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">3</span>
+    <span class="hljs-keyword">Dim</span> dstRow <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span>
+    <span class="hljs-keyword">Const</span> dstCol_dt <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">2</span>
+    <span class="hljs-keyword">Const</span> dstCol_ser <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">3</span>
+    <span class="hljs-keyword">Const</span> dstCol_u <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">7</span>
+    <span class="hljs-keyword">Const</span> dstCol_v <span class="hljs-keyword">As</span> <span class="hljs-built_in">Integer</span> = <span class="hljs-number">8</span>
+
+    <span class="hljs-keyword">For</span> i = lb <span class="hljs-keyword">To</span> ub
+        dstRow = GetLastRow(dstWS_cool, dstCol_u) + <span class="hljs-number">1</span>
+        dstWS_cool.Cells(dstRow, dstCol_ser).Value = dstWS_cool.Cells(dstRow, dstCol_ser).Value &amp; parse_pbm_fp(csv_path)
+        dstWS_cool.Cells(dstRow, dstCol_u).Resize(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) = ConvXY_to_uv(src_ws.Cells(cool(i), col_x), src_ws.Cells(cool(i), col_y))                <span class="hljs-comment">' cool</span>
+        
+        dstWS_neutral.Cells(dstRow, dstCol_ser).Value = dstWS_neutral.Cells(dstRow, dstCol_ser).Value &amp; parse_pbm_fp(csv_path)
+        dstWS_neutral.Cells(dstRow, dstCol_u).Resize(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) = ConvXY_to_uv(src_ws.Cells(neutral(i), col_x), src_ws.Cells(neutral(i), col_y))    <span class="hljs-comment">' neutral</span>
+        
+        dstWS_warm.Cells(dstRow, dstCol_ser).Value = dstWS_warm.Cells(dstRow, dstCol_ser).Value &amp; parse_pbm_fp(csv_path)
+        dstWS_warm.Cells(dstRow, dstCol_u).Resize(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) = ConvXY_to_uv(src_ws.Cells(warm(i), col_x), src_ws.Cells(warm(i), col_y))           <span class="hljs-comment">' warm</span>
+        
+        dstWS_expert1.Cells(dstRow, dstCol_ser).Value = dstWS_expert1.Cells(dstRow, dstCol_ser).Value &amp; parse_pbm_fp(csv_path)
+        dstWS_expert1.Cells(dstRow, dstCol_u).Resize(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) = ConvXY_to_uv(src_ws.Cells(expert1(i), col_x), src_ws.Cells(expert1(i), col_y))  <span class="hljs-comment">' expert1</span>
+    <span class="hljs-keyword">Next</span> i
+    
+    src_wb.Close <span class="hljs-literal">False</span>
+    <span class="hljs-keyword">Set</span> src_wb = <span class="hljs-literal">Nothing</span>
+<span class="hljs-keyword">End</span> <span class="hljs-keyword">Sub</span>
+
+</div></code></pre>
+<h2 id="visualization">Visualization</h2>
+<p>using some tricks to make dynamic charts.</p>
+<h3 id="dynamic-chart">Dynamic Chart</h3>
+<pre class="hljs"><code><div>
+<span class="hljs-comment"><span class="hljs-doctag">'''</span> Dynamic Chart</span>
+<span class="hljs-comment">' [ trick ]</span>
+<span class="hljs-comment">' step1: using Formula -&gt; Define Name to cusomize target series + offset() function</span>
+<span class="hljs-comment">' step2: using Click Chart -&gt; select data series -&gt; target series</span>
+
+<span class="hljs-comment">' ref: https://support.microsoft.com/en-us/office/offset-function-c8de19ae-dd79-4b9b-a14e-b4d906d11b66</span>
+<span class="hljs-comment">' syntax: OFFSET(reference, rows, cols, [height], [width])</span>
+
+</div></code></pre>
+<img src=".\static\Define_Name.png" height=240>
+<img src=".\static\Chart_Series.png" height=240>
+<h3 id="gallary">Gallary</h3>
+<img src=".\static\cool.png" width=320>
+<img src=".\static\neutral.png" width=320>
+<img src=".\static\warm.png" width=320>
+<img src=".\static\expert1.png" width=320>
+<h1 id="solution-02">Solution 02</h1>
+<p>toolkits: <code>Python3</code> + <code>Pandas</code> + <code>Rlang</code> + <code>ggplot2</code>;</p>
+<p>using this approach when workload and dataset are enormous (&gt;=1,000);</p>
+<h2 id="implementation">Implementation</h2>
+<pre class="hljs"><code><div>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PBM_Wrangler</span>:</span>
+    fn_prefix:str         = <span class="hljs-string">'PBM_'</span>
+    fn_ext:str            = <span class="hljs-string">'CSV'</span>
+    head_x:str            = <span class="hljs-string">'x(calc)'</span>
+    head_y:str            = <span class="hljs-string">'y(calc)'</span>
+    head_xy:List[str]     = [head_x, head_y]
+    head_picmode:str      = <span class="hljs-string">'picmode'</span>
+    head_level:str        = <span class="hljs-string">'LEVEL'</span>
+    head_u:str            = <span class="hljs-string">'u'</span>
+    head_v:str            = <span class="hljs-string">'v'</span>
+    head_uv:List[str]     = [head_u, head_v]
+    dummy_rows:List[int]  = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">33</span>)] + [<span class="hljs-number">92</span>, <span class="hljs-number">93</span>] + [<span class="hljs-number">152</span>, <span class="hljs-number">153</span>] + [<span class="hljs-number">212</span>, <span class="hljs-number">213</span>] + [<span class="hljs-number">272</span>, <span class="hljs-number">273</span>] <span class="hljs-comment"># may change overtime..</span>
+    levels:int            = <span class="hljs-number">57</span>
+    temps:List[str]       = [<span class="hljs-string">'COOL'</span>] * levels + [<span class="hljs-string">'NEUTRAL'</span>] * levels + [<span class="hljs-string">'WARM'</span>] * levels + [<span class="hljs-string">'EXPERT1'</span>] * levels + [<span class="hljs-string">'PHOTO'</span>] * levels
+    ires:List[int]        = [<span class="hljs-number">12</span>, <span class="hljs-number">23</span>, <span class="hljs-number">34</span>, <span class="hljs-number">45</span>]
+    color_temps:List[str] = [<span class="hljs-string">'COOL'</span>, <span class="hljs-string">'NEUTRAL'</span>, <span class="hljs-string">'WARM'</span>, <span class="hljs-string">'EXPERT1'</span>]
+
+    df_temp:DataFrame            = <span class="hljs-literal">None</span>
+    df_cools:List[DataFrame]     = []
+    df_neutrals:List[DataFrame]  = []
+    df_warms:List[DataFrame]     = []
+    df_expert1s:List[DataFrame]  = []
+    df_cts:List[List[DataFrame]] = [df_cools, df_neutrals, df_warms, df_expert1s] <span class="hljs-comment"># note: match with color_temps</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, src_folder:Path)</span> -&gt; <span class="hljs-keyword">None</span>:</span>
+        <span class="hljs-string">"""initialize an instance with a given folder with source PBM_*.CSV log files inside
+
+        Args:
+            src_folder (Path): a given folder with source PBM_*.CSV log files inside
+        """</span>
+        self._src_folder = src_folder
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_filter</span><span class="hljs-params">(self)</span>-&gt;Path:</span>
+        <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> sorted(pathlib.Path(self._src_folder).rglob(<span class="hljs-string">f'*.<span class="hljs-subst">{self.fn_ext}</span>'</span>)):
+            <span class="hljs-keyword">if</span> path.name.startswith(self.fn_prefix):
+                <span class="hljs-keyword">yield</span> path.absolute()
+
+<span class="hljs-meta">    @staticmethod</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">xy2uv</span><span class="hljs-params">(x:float, y:float)</span>-&gt;Tuple:</span>
+        u = (<span class="hljs-number">4</span> * x) / (<span class="hljs-number">12</span> * y - <span class="hljs-number">2</span> * x + <span class="hljs-number">3</span>)
+        v = (<span class="hljs-number">9</span> * y) / (<span class="hljs-number">12</span> * y - <span class="hljs-number">2</span> * x + <span class="hljs-number">3</span>)
+        <span class="hljs-keyword">return</span> u, v
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">xy2u</span><span class="hljs-params">(self, x:float, y:float, offset:float=<span class="hljs-number">.0</span>)</span>-&gt;float:</span>
+        <span class="hljs-keyword">return</span> (<span class="hljs-number">4</span> * x) / (<span class="hljs-number">12</span> * y - <span class="hljs-number">2</span> * x + <span class="hljs-number">3</span>) + offset
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">xy2v</span><span class="hljs-params">(self, x:float, y:float, offset:float=<span class="hljs-number">.0</span>)</span>-&gt;float:</span>
+        <span class="hljs-keyword">return</span> (<span class="hljs-number">9</span> * y) / (<span class="hljs-number">12</span> * y - <span class="hljs-number">2</span> * x + <span class="hljs-number">3</span>) + offset
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__read</span><span class="hljs-params">(self, pbm_file:Path)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        df:DataFrame = pd.read_csv(pbm_file, skiprows=self.dummy_rows, engine=<span class="hljs-string">'python'</span>)
+        df[self.head_picmode] = self.temps
+        self.df_temp = df[np.isin(df[self.head_level], self.ires)]
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__categorize</span><span class="hljs-params">(self, color_temp:str, dst_df:List[DataFrame])</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        df:DataFrame = self.df_temp[self.df_temp[self.head_picmode] == color_temp].loc[:, [self.head_x, self.head_y]]
+        df[self.head_u] = df.apply(<span class="hljs-keyword">lambda</span> df: self.xy2u(df[self.head_x], df[self.head_y]), axis=<span class="hljs-number">1</span>)
+        df[self.head_v] = df.apply(<span class="hljs-keyword">lambda</span> df: self.xy2v(df[self.head_x], df[self.head_y]), axis=<span class="hljs-number">1</span>)
+        fixed_df = df.loc[:, self.head_uv]
+        dst_df.append(fixed_df)
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__reset</span><span class="hljs-params">(self, how:str=None)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        self.df_temp = <span class="hljs-literal">None</span>
+        <span class="hljs-keyword">if</span> how == <span class="hljs-string">'all'</span>:
+            <span class="hljs-keyword">for</span> df <span class="hljs-keyword">in</span> self.df_cts:
+                df.clear()
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__wrangle</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        <span class="hljs-keyword">for</span> color_temp, df_ct <span class="hljs-keyword">in</span> zip(self.color_temps, self.df_cts):
+            <span class="hljs-keyword">if</span> df_ct: self.__categorize(color_temp, df_ct)
+        self.__reset()
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__concat</span><span class="hljs-params">(self, color_temp:str, src_df:List[DataFrame])</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        df:DataFrame = pd.concat(src_df, ignore_index=<span class="hljs-literal">True</span>, sort=<span class="hljs-literal">False</span>)
+        df.to_csv(<span class="hljs-string">f'./src/<span class="hljs-subst">{color_temp}</span>.csv'</span>, index=<span class="hljs-literal">False</span>)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__tocsv</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        <span class="hljs-keyword">for</span> color_temp, df_ct <span class="hljs-keyword">in</span> zip(self.color_temps, self.df_cts):
+            <span class="hljs-keyword">if</span> df_ct: self.__concat(color_temp, df_ct)
+        
+<span class="hljs-meta">    @timer</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">work</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+        logging.info(<span class="hljs-string">'start working..'</span>)
+        <span class="hljs-keyword">for</span> pbm_file <span class="hljs-keyword">in</span> self._filter():
+            self.__read(pbm_file)
+            self.__wrangle()
+        self.__tocsv()
+        self.__reset(how=<span class="hljs-string">'all'</span>)
+        logging.info(<span class="hljs-string">'successed.'</span>)
+
+</div></code></pre>
+<h2 id="visualization">Visualization</h2>
+<pre class="hljs"><code><div>
+<span class="hljs-comment">### plot</span>
+plot.wb &lt;- <span class="hljs-keyword">function</span>(df.temp, temp,
+                    temp.breaks.x, temp.breaks.y,
+                    temp.minor.x, temp.minor.y, 
+                    temp.jnd1, temp.jnd2, temp.jnd3) {
+  
+  p &lt;- ggplot(df.temp) +
+    geom_point(aes(x=u,
+                   y=v),
+               colour = <span class="hljs-string">"purple"</span>,
+               shape = <span class="hljs-number">21</span>,
+               fill = <span class="hljs-string">'white'</span>,
+               stroke = <span class="hljs-number">.5</span>,
+               alpha = <span class="hljs-number">0.9</span>,
+               size = <span class="hljs-number">2</span>) +
+  <span class="hljs-comment">#  coord_cartesian(xlim=c(0.1771, 0.1991),</span>
+  <span class="hljs-comment">#                  ylim=c(0.4247, 0.4467)) +</span>
+    scale_x_continuous(breaks = temp.breaks.x,
+                       minor_breaks = temp.minor.x) +
+    scale_y_continuous(breaks = temp.breaks.y,
+                       minor_breaks = temp.minor.y) +
+    labs(title=gsub(<span class="hljs-string">' '</span>, <span class="hljs-string">''</span>, paste(<span class="hljs-string">'WB::'</span>, temp)),
+         x=<span class="hljs-string">"u\'"</span>,
+         y=<span class="hljs-string">"v\'"</span>) +
+    theme(plot.title = element_text(size=<span class="hljs-number">8</span>),
+          <span class="hljs-comment">#panel.grid.major.x = element_blank(),</span>
+          <span class="hljs-comment">#panel.grid.major.y = element_blank(),</span>
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          axis.title.x = element_text(size=<span class="hljs-number">8</span>),
+          axis.title.y = element_text(angle=<span class="hljs-number">0</span>, size=<span class="hljs-number">8</span>, vjust=<span class="hljs-number">0.5</span>),
+          axis.text.x = element_text(angle=<span class="hljs-number">90</span>, size=<span class="hljs-number">5</span>),
+          axis.text.y = element_text(size=<span class="hljs-number">5</span>)) +
+    geom_path(data=temp.jnd1,
+               aes(x=du,
+                   y=dv),
+               size = <span class="hljs-number">0.2</span>,
+               color = <span class="hljs-string">'blue'</span>
+               ) +
+    geom_path(data=temp.jnd2,
+               aes(x=du,
+                   y=dv),
+               size = <span class="hljs-number">0.2</span>,
+               color = <span class="hljs-string">'blue'</span>
+    ) +
+    geom_path(data=temp.jnd3,
+               aes(x=du,
+                   y=dv),
+               size = <span class="hljs-number">0.2</span>,
+               color = <span class="hljs-string">'red'</span>
+    )
+<span class="hljs-comment">#  dev.print(file = gsub(' ', '',paste('Rplot_', temp, '.png')),</span>
+<span class="hljs-comment">#            device = png,</span>
+<span class="hljs-comment">#            width = 800,</span>
+<span class="hljs-comment">#            height = 800)</span>
+  <span class="hljs-keyword">return</span>(p)
+}
+
+</div></code></pre>
+<h3 id="gallary">Gallary</h3>
+<img src="./static/Rplot_wb.png" width=800>
+<h2 id="about">About</h2>
+<p>MIT License</p>
+<p>Copyright (c) 2021 ZL</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+
+</body>
+</html>

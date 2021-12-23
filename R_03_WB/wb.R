@@ -34,26 +34,34 @@ jnd.ellips <- function(jnd, cTT.u, cTT.v){
 cool.jnd1 <- jnd.ellips(0.003, 0.1881, 0.4357)
 cool.jnd2 <- jnd.ellips(0.006, 0.1881, 0.4357)
 cool.jnd3 <- jnd.ellips(0.010, 0.1881, 0.4357)
-cool.minor.x <- seq(0.1771, 0.1991, 0.001)
-cool.minor.y <- seq(0.4247, 0.4467, 0.001)
+cool.breaks.x <- seq(0.1771, 0.1991, 0.001)
+cool.breaks.y <- seq(0.4247, 0.4467, 0.001)
+cool.minor.x <- seq(0.1771, 0.1991, 0.0002)
+cool.minor.y <- seq(0.4247, 0.4467, 0.0002)
 
 neutral.jnd1 <- jnd.ellips(0.003, 0.1901, 0.4467)
 neutral.jnd2 <- jnd.ellips(0.006, 0.1901, 0.4467)
 neutral.jnd3 <- jnd.ellips(0.010, 0.1901, 0.4467)
-neutral.minor.x <- seq(0.1791, 0.2011, 0.001)
-neutral.minor.y <- seq(0.4357, 0.4577, 0.001)
+neutral.breaks.x <- seq(0.1791, 0.2011, 0.001)
+neutral.breaks.y <- seq(0.4357, 0.4577, 0.001)
+neutral.minor.x <- seq(0.1791, 0.2011, 0.0002)
+neutral.minor.y <- seq(0.4357, 0.4577, 0.0002)
 
 warm.jnd1 <- jnd.ellips(0.003, 0.1939, 0.4549)
 warm.jnd2 <- jnd.ellips(0.006, 0.1939, 0.4549)
 warm.jnd3 <- jnd.ellips(0.010, 0.1939, 0.4549)
-warm.minor.x <- seq(0.1829, 0.2049, 0.001)
-warm.minor.y <- seq(0.4439, 0.4659, 0.001)
+warm.breaks.x <- seq(0.1829, 0.2049, 0.001)
+warm.breaks.y <- seq(0.4439, 0.4659, 0.001)
+warm.minor.x <- seq(0.1829, 0.2049, 0.0002)
+warm.minor.y <- seq(0.4439, 0.4659, 0.0002)
 
 expert1.jnd1 <- jnd.ellips(0.003, 0.1978, 0.469)
 expert1.jnd2 <- jnd.ellips(0.006, 0.1978, 0.469)
 expert1.jnd3 <- jnd.ellips(0.010, 0.1978, 0.469)
-expert1.minor.x <- seq(0.1868, 0.2088, 0.001)
-expert1.minor.y <- seq(0.4580, 0.4800, 0.001)
+expert1.breaks.x <- seq(0.1868, 0.2088, 0.001)
+expert1.breaks.y <- seq(0.4580, 0.4800, 0.001)
+expert1.minor.x <- seq(0.1868, 0.2088, 0.0002)
+expert1.minor.y <- seq(0.4580, 0.4800, 0.0002)
 
 ### read white balance data
 df.cool <- read.csv("./src/COOL.csv")
@@ -63,27 +71,38 @@ df.expert1 <- read.csv("./src/EXPERT1.csv")
 #View(df)
 
 ### plot
-plot.wb <- function(df.temp, temp, temp.minor.x, temp.minor.y, temp.jnd1, temp.jnd2, temp.jnd3) {
+plot.wb <- function(df.temp, temp,
+                    temp.breaks.x, temp.breaks.y,
+                    temp.minor.x, temp.minor.y, 
+                    temp.jnd1, temp.jnd2, temp.jnd3) {
+  
   p <- ggplot(df.temp) +
     geom_point(aes(x=u,
                    y=v),
                colour = "purple",
                shape = 21,
                fill = 'white',
-               stroke = .6,
+               stroke = .5,
                alpha = 0.9,
                size = 2) +
   #  coord_cartesian(xlim=c(0.1771, 0.1991),
   #                  ylim=c(0.4247, 0.4467)) +
-    scale_x_continuous(minor_breaks = temp.minor.x) +
-    scale_y_continuous(minor_breaks = temp.minor.y) +
+    scale_x_continuous(breaks = temp.breaks.x,
+                       minor_breaks = temp.minor.x) +
+    scale_y_continuous(breaks = temp.breaks.y,
+                       minor_breaks = temp.minor.y) +
     labs(title=gsub(' ', '', paste('WB::', temp)),
          x="u\'",
          y="v\'") +
-    theme(panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_blank(),
-          axis.text.x = element_text(angle=90),
-          plot.title = element_text(size=10)) +
+    theme(plot.title = element_text(size=8),
+          #panel.grid.major.x = element_blank(),
+          #panel.grid.major.y = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          axis.title.x = element_text(size=8),
+          axis.title.y = element_text(angle=0, size=8, vjust=0.5),
+          axis.text.x = element_text(angle=90, size=5),
+          axis.text.y = element_text(size=5)) +
     geom_path(data=temp.jnd1,
                aes(x=du,
                    y=dv),
@@ -112,6 +131,8 @@ plot.wb <- function(df.temp, temp, temp.minor.x, temp.minor.y, temp.jnd1, temp.j
 ### plot WB cool
 p1 <- plot.wb(df.cool,
         'Cool',
+        cool.breaks.x,
+        cool.breaks.y,
         cool.minor.x,
         cool.minor.y, 
         cool.jnd1,
@@ -121,6 +142,8 @@ p1 <- plot.wb(df.cool,
 ### plot WB neutral
 p2 <- plot.wb(df.neutral,
         'Neutral',
+        neutral.breaks.x,
+        neutral.breaks.y,
         neutral.minor.x,
         neutral.minor.y, 
         neutral.jnd1,
@@ -131,6 +154,8 @@ p2 <- plot.wb(df.neutral,
 ### plot WB warm
 p3 <- plot.wb(df.warm,
         'Warm',
+        warm.breaks.x,
+        warm.breaks.y,
         warm.minor.x,
         warm.minor.y, 
         warm.jnd1,
@@ -140,17 +165,23 @@ p3 <- plot.wb(df.warm,
 ### plot WB expert1
 p4 <- plot.wb(df.expert1,
         'Expert1',
+        expert1.breaks.x,
+        expert1.breaks.y,
         expert1.minor.x,
         expert1.minor.y, 
         expert1.jnd1,
         expert1.jnd2,
         expert1.jnd3)
 
-### layout
+### layout 01
+p1 + p2
+p3 + p4
+
+### layout 02
 (p1 | p2) /
   (p3 | p4) +
   plot_annotation(
-    title = '【SSVE Pmod/SET】 White Balance Confirmation',
+    title = '[SSVE Pmod/SET] White Balance Confirmation',
     subtitle = '規格: u\'v\', 0.010 (3JND)',
     caption = 'Disclaimer: Non of these plots are insightful @ZL',
     tag_levels = 'A'

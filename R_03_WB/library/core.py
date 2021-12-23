@@ -59,7 +59,7 @@ class PBM_Wrangler:
         self._src_folder = src_folder
 
     def _filter(self)->Path:
-        for path in sorted(pathlib.Path(self._src_folder).glob(f'*.{self.fn_ext}')):
+        for path in sorted(pathlib.Path(self._src_folder).rglob(f'*.{self.fn_ext}')):
             if path.name.startswith(self.fn_prefix):
                 yield path.absolute()
 
@@ -95,7 +95,7 @@ class PBM_Wrangler:
 
     def __wrangle(self)->None:
         for color_temp, df_ct in zip(self.color_temps, self.df_cts):
-            self.__categorize(color_temp, df_ct)
+            if df_ct: self.__categorize(color_temp, df_ct)
         self.__reset()
 
     def __concat(self, color_temp:str, src_df:List[DataFrame])->None:
@@ -104,7 +104,7 @@ class PBM_Wrangler:
 
     def __tocsv(self)->None:
         for color_temp, df_ct in zip(self.color_temps, self.df_cts):
-            self.__concat(color_temp, df_ct)
+            if df_ct: self.__concat(color_temp, df_ct)
         
     @timer
     def work(self)->None:

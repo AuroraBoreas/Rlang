@@ -377,6 +377,7 @@ code {
 <li>v0.02, fix visualization bug (screw non-standard charts..)</li>
 <li>v0.03, resize <code>named range</code> dynamically</li>
 <li>v0.04, create <code>Python3</code> + <code>Rlang</code> solution for scaling data and workload;</li>
+<li>v0.05, builder pipeline to dump all data into database</li>
 </ul>
 <h2 id="diagram">Diagram</h2>
 <p>the following the diagram of the whole process</p>
@@ -473,6 +474,9 @@ code {
 <h2 id="implementation">Implementation</h2>
 <pre class="hljs"><code><div>
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PBM_Wrangler</span>:</span>
+    dst_folder:Path = <span class="hljs-string">'./data'</span>
+    engine:str      = <span class="hljs-string">'python'</span>
+
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, pbm:PBM_FileStruct, src_folder:Path, holder:Holder, offset:float=None)</span> -&gt; <span class="hljs-keyword">None</span>:</span>
         <span class="hljs-string">"""initialize an instance with a given folder with source PBM_*.CSV log files inside
         Args:
@@ -484,18 +488,21 @@ code {
         self._offset      = offset
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_filter</span><span class="hljs-params">(self)</span>-&gt;Path:</span>
-        <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> sorted(pathlib.Path(self._src_folder).rglob(<span class="hljs-string">f'*.<span class="hljs-subst">{self._pbm.fn_ext}</span>'</span>)):
+        <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> sorted(pathlib.Path(self._src_folder).rglob(<span class="hljs-string">f'*<span class="hljs-subst">{self._pbm.fn_ext}</span>'</span>)):
             <span class="hljs-keyword">if</span> path.name.startswith(self._pbm.fn_prefix):
                 <span class="hljs-keyword">yield</span> path.absolute()
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__read</span><span class="hljs-params">(self, pbm_file:Path)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine=<span class="hljs-string">'python'</span>)
+        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine=self.engine)
         df[self._pbm.head_picmode] = self._pbm.temp_names
-        df[self._pbm.head_ser]     = self.__getSer(pbm_file)
+        df[self._pbm.head_ser]     = self.__parse(pbm_file, self._pbm.idx_ser)
+        df[self._pbm.head_date]    = self.__parse(pbm_file, self._pbm.idx_date)
         self._holder.temporary     = df[np.isin(df[self._pbm.head_level], self._pbm.ires)]
+        self._holder.agg(df)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__getSer</span><span class="hljs-params">(self, pbm_file:Path)</span>-&gt;str:</span>
-        <span class="hljs-keyword">return</span> pathlib.Path(pbm_file).name.split(self._pbm.fn_sep)[self._pbm.ser_idx]
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__parse</span><span class="hljs-params">(self, pbm_file:Path, idx:int)</span>-&gt;str:</span>
+        emptyStr:str = <span class="hljs-string">''</span>
+        <span class="hljs-keyword">return</span> pathlib.Path(pbm_file).name.replace(self._pbm.fn_ext, emptyStr).split(self._pbm.fn_sep)[idx]
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__categorize</span><span class="hljs-params">(self, color_temp:str, dst_df:List[DataFrame])</span>-&gt;<span class="hljs-keyword">None</span>:</span>
         df:DataFrame         = self._holder.temporary[self._holder.temporary[self._pbm.head_picmode] == color_temp].loc[:, self._pbm.head_xy]
@@ -511,20 +518,20 @@ code {
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__concat</span><span class="hljs-params">(self, color_temp:str, src_df:List[DataFrame])</span>-&gt;<span class="hljs-keyword">None</span>:</span>
         df:DataFrame = pd.concat(src_df, ignore_index=<span class="hljs-literal">True</span>, sort=<span class="hljs-literal">False</span>)
-        df.to_csv(<span class="hljs-string">f'./src/<span class="hljs-subst">{color_temp}</span>.csv'</span>, index=<span class="hljs-literal">False</span>)
+        df.to_csv(<span class="hljs-string">f'<span class="hljs-subst">{self.dst_folder}</span>/<span class="hljs-subst">{color_temp}</span>.csv'</span>, index=<span class="hljs-literal">False</span>)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__tocsv</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__to_csv</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
         <span class="hljs-keyword">for</span> color_temp, df_ct <span class="hljs-keyword">in</span> zip(self._holder.colors, self._holder.colorTemps):
             <span class="hljs-keyword">if</span> df_ct: self.__concat(color_temp, df_ct)
 
 <span class="hljs-meta">    @timer</span>
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">work</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">work</span><span class="hljs-params">(self, dstDB:Path, table_name:str)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
         logging.info(<span class="hljs-string">'start working..'</span>)
         <span class="hljs-keyword">for</span> pbm_file <span class="hljs-keyword">in</span> self._filter():
             self.__read(pbm_file)
             self.__wrangle()
-        self.__tocsv()
-        self._holder.to_sql(<span class="hljs-string">'./src/raw.db'</span>, <span class="hljs-string">'wb'</span>)
+        self.__to_csv()
+        self._holder.to_sql(dstDB, table_name)
         <span class="hljs-comment"># self._holder.to_csv('./src/raw.csv')</span>
         self._holder.reset(how=<span class="hljs-string">'all'</span>)
         logging.info(<span class="hljs-string">'successed.'</span>)

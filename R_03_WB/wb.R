@@ -64,10 +64,10 @@ expert1.minor.x <- seq(0.1868, 0.2088, 0.0002)
 expert1.minor.y <- seq(0.4580, 0.4800, 0.0002)
 
 ### read white balance data
-df.cool <- read.csv("./src/COOL.csv")
-df.neutral <- read.csv("./src/NEUTRAL.csv")
-df.warm <- read.csv("./src/WARM.csv")
-df.expert1 <- read.csv("./src/EXPERT1.csv")
+df.cool <- read.csv("./data/COOL.csv")
+df.neutral <- read.csv("./data/NEUTRAL.csv")
+df.warm <- read.csv("./data/WARM.csv")
+df.expert1 <- read.csv("./data/EXPERT1.csv")
 #View(df)
 
 ### plot

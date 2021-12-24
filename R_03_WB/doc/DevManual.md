@@ -16,6 +16,7 @@ SSVE TVQA member `@Zhang Liang`, 20211220
 - v0.02, fix visualization bug (screw non-standard charts..)
 - v0.03, resize `named range` dynamically
 - v0.04, create `Python3` + `Rlang` solution for scaling data and workload;
+- v0.05, builder pipeline to dump all data into database
 
 ## Diagram
 
@@ -135,6 +136,9 @@ using this approach when workload and dataset are enormous (>=1,000);
 ```Python
 
 class PBM_Wrangler:
+    dst_folder:Path = './data'
+    engine:str      = 'python'
+
     def __init__(self, pbm:PBM_FileStruct, src_folder:Path, holder:Holder, offset:float=None) -> None:
         """initialize an instance with a given folder with source PBM_*.CSV log files inside
         Args:
@@ -146,18 +150,21 @@ class PBM_Wrangler:
         self._offset      = offset
 
     def _filter(self)->Path:
-        for path in sorted(pathlib.Path(self._src_folder).rglob(f'*.{self._pbm.fn_ext}')):
+        for path in sorted(pathlib.Path(self._src_folder).rglob(f'*{self._pbm.fn_ext}')):
             if path.name.startswith(self._pbm.fn_prefix):
                 yield path.absolute()
 
     def __read(self, pbm_file:Path)->None:
-        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine='python')
+        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine=self.engine)
         df[self._pbm.head_picmode] = self._pbm.temp_names
-        df[self._pbm.head_ser]     = self.__getSer(pbm_file)
+        df[self._pbm.head_ser]     = self.__parse(pbm_file, self._pbm.idx_ser)
+        df[self._pbm.head_date]    = self.__parse(pbm_file, self._pbm.idx_date)
         self._holder.temporary     = df[np.isin(df[self._pbm.head_level], self._pbm.ires)]
+        self._holder.agg(df)
 
-    def __getSer(self, pbm_file:Path)->str:
-        return pathlib.Path(pbm_file).name.split(self._pbm.fn_sep)[self._pbm.ser_idx]
+    def __parse(self, pbm_file:Path, idx:int)->str:
+        emptyStr:str = ''
+        return pathlib.Path(pbm_file).name.replace(self._pbm.fn_ext, emptyStr).split(self._pbm.fn_sep)[idx]
 
     def __categorize(self, color_temp:str, dst_df:List[DataFrame])->None:
         df:DataFrame         = self._holder.temporary[self._holder.temporary[self._pbm.head_picmode] == color_temp].loc[:, self._pbm.head_xy]
@@ -173,20 +180,20 @@ class PBM_Wrangler:
 
     def __concat(self, color_temp:str, src_df:List[DataFrame])->None:
         df:DataFrame = pd.concat(src_df, ignore_index=True, sort=False)
-        df.to_csv(f'./src/{color_temp}.csv', index=False)
+        df.to_csv(f'{self.dst_folder}/{color_temp}.csv', index=False)
 
-    def __tocsv(self)->None:
+    def __to_csv(self)->None:
         for color_temp, df_ct in zip(self._holder.colors, self._holder.colorTemps):
             if df_ct: self.__concat(color_temp, df_ct)
 
     @timer
-    def work(self)->None:
+    def work(self, dstDB:Path, table_name:str)->None:
         logging.info('start working..')
         for pbm_file in self._filter():
             self.__read(pbm_file)
             self.__wrangle()
-        self.__tocsv()
-        self._holder.to_sql('./src/raw.db', 'wb')
+        self.__to_csv()
+        self._holder.to_sql(dstDB, table_name)
         # self._holder.to_csv('./src/raw.csv')
         self._holder.reset(how='all')
         logging.info('successed.')

@@ -7,12 +7,13 @@ from library.core import (
 )
 
 def main()->None:
-    root:Path = './data'
-    pfs       = PBM_FileStruct()
-    holder    = Holder()
+    root:Path    = './src'
+    pfs          = PBM_FileStruct()
+    holder       = Holder()
+    offset:float = .0
     
-    pw = PBM_Wrangler(pfs, root, holder, .0)
-    pw.work('./src/raw.db', 'wb')
+    pw = PBM_Wrangler(pfs, root, holder, offset)
+    pw.work('./data/wb.db', 'wb')
 
 if __name__ == '__main__':
     main()

@@ -22,9 +22,9 @@ def dml(table_name:str, cur:Cursor, act:str)->None:
         """
         CREATE TABLE IF NOT EXISTS {0}(
             LEVEL INTEGER,
-            R DECIMAL,
-            G DECIMAL,
-            B DECIMAL,
+            R INTEGER,
+            G INTEGER,
+            B INTEGER,
             x_calc DECIMAL,
             y_calc DECIMAL,
             Ycalc DECIMAL,
@@ -34,8 +34,9 @@ def dml(table_name:str, cur:Cursor, act:str)->None:
             STATUS TEXT,
             picmode TEXT,
             ser TEXT,
+            date TEXT,
 
-            UNIQUE(LEVEL,R,G,B,x_calc,y_calc,Ycalc,x_target,y_target,Ytarget,STATUS,picmode,ser) ON CONFLICT IGNORE
+            UNIQUE(LEVEL, R, G, B, x_calc, y_calc, Ycalc, x_target, y_target, Ytarget, STATUS, picmode, ser, date) ON CONFLICT IGNORE
         );
         """.format(table_name))
     try:
@@ -68,7 +69,23 @@ class Holder(IHolder):
             for df in self.df_cts: df.clear()
 
     def to_sql(self, dstDB:Path, table_name:Path)->None:
-        heads = ['LEVEL','R','G','B','x_calc','y_calc','Ycalc','x_target','y_target','Ytarget','STATUS','picmode','ser']
+        heads = [
+            'LEVEL',
+            'R',
+            'G',
+            'B',
+            'x_calc',
+            'y_calc',
+            'Ycalc',
+            'x_target',
+            'y_target',
+            'Ytarget',
+            'STATUS',
+            'picmode',
+            'ser',
+            'date',
+        ]
+
         if self.df_temps:
             df:DataFrame = pd.concat(self.df_temps, sort=False, ignore_index=True)
             df.columns = heads
@@ -81,8 +98,8 @@ class Holder(IHolder):
         df:DataFrame = pd.concat(self.df_temps, sort=False, ignore_index=True)
         df.to_csv(dstPath, index=False)
 
-    def __agg(self)->None:
-        self.df_temps.append(self.df_temp)
+    def agg(self, val:DataFrame)->None:
+        self.df_temps.append(val)
 
     @property
     def temporary(self)->DataFrame:
@@ -91,7 +108,6 @@ class Holder(IHolder):
     @temporary.setter
     def temporary(self, val:DataFrame)->None:
         self.df_temp = val
-        self.__agg()
 
     @property
     def colorTemps(self)->List[List[DataFrame]]:

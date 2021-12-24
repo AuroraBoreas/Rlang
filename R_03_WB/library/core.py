@@ -33,6 +33,9 @@ from .utility import (
 
 
 class PBM_Wrangler:
+    dst_folder:Path = './data'
+    engine:str      = 'python'
+
     def __init__(self, pbm:PBM_FileStruct, src_folder:Path, holder:Holder, offset:float=None) -> None:
         """initialize an instance with a given folder with source PBM_*.CSV log files inside
         Args:
@@ -44,18 +47,21 @@ class PBM_Wrangler:
         self._offset      = offset
 
     def _filter(self)->Path:
-        for path in sorted(pathlib.Path(self._src_folder).rglob(f'*.{self._pbm.fn_ext}')):
+        for path in sorted(pathlib.Path(self._src_folder).rglob(f'*{self._pbm.fn_ext}')):
             if path.name.startswith(self._pbm.fn_prefix):
                 yield path.absolute()
 
     def __read(self, pbm_file:Path)->None:
-        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine='python')
+        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine=self.engine)
         df[self._pbm.head_picmode] = self._pbm.temp_names
-        df[self._pbm.head_ser]     = self.__getSer(pbm_file)
+        df[self._pbm.head_ser]     = self.__parse(pbm_file, self._pbm.idx_ser)
+        df[self._pbm.head_date]    = self.__parse(pbm_file, self._pbm.idx_date)
         self._holder.temporary     = df[np.isin(df[self._pbm.head_level], self._pbm.ires)]
+        self._holder.agg(df)
 
-    def __getSer(self, pbm_file:Path)->str:
-        return pathlib.Path(pbm_file).name.split(self._pbm.fn_sep)[self._pbm.ser_idx]
+    def __parse(self, pbm_file:Path, idx:int)->str:
+        emptyStr:str = ''
+        return pathlib.Path(pbm_file).name.replace(self._pbm.fn_ext, emptyStr).split(self._pbm.fn_sep)[idx]
 
     def __categorize(self, color_temp:str, dst_df:List[DataFrame])->None:
         df:DataFrame         = self._holder.temporary[self._holder.temporary[self._pbm.head_picmode] == color_temp].loc[:, self._pbm.head_xy]
@@ -71,7 +77,7 @@ class PBM_Wrangler:
 
     def __concat(self, color_temp:str, src_df:List[DataFrame])->None:
         df:DataFrame = pd.concat(src_df, ignore_index=True, sort=False)
-        df.to_csv(f'./src/{color_temp}.csv', index=False)
+        df.to_csv(f'{self.dst_folder}/{color_temp}.csv', index=False)
 
     def __to_csv(self)->None:
         for color_temp, df_ct in zip(self._holder.colors, self._holder.colorTemps):

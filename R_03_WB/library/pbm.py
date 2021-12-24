@@ -10,14 +10,16 @@ from .utility import dataclass, List
 
 @dataclass
 class PBM_FileStruct:
-    ser_idx:int      = 3
+    idx_ser:int      = 3
+    idx_date:int     = 4
     fn_sep:str       = '_'
     fn_prefix:str    = 'PBM_'
-    fn_ext:str       = 'CSV'
+    fn_ext:str       = '.CSV'
     head_x:str       = 'x(calc)'
     head_y:str       = 'y(calc)'
     head_ser:str     = 'ser'
     head_picmode:str = 'picmode'
+    head_date:str    = 'datetime'
     head_level:str   = 'LEVEL'
     head_u:str       = 'u'
     head_v:str       = 'v'
@@ -25,11 +27,11 @@ class PBM_FileStruct:
 
     @property
     def head_xy(self)->List[str]:
-        return [self.head_x, self.head_y, self.head_ser, self.head_level]
+        return [self.head_level, self.head_x, self.head_y, self.head_ser, self.head_date]
     
     @property
     def head_uv(self)->List[str]:
-        return [self.head_u, self.head_v, self.head_ser, self.head_level]
+        return [self.head_level, self.head_u, self.head_v, self.head_ser, self.head_date]
 
     @property
     def dummy_rows(self)->List[int]:

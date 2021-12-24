@@ -1,10 +1,18 @@
 
-from library.core import PBM_Wrangler, Path
+from library.core import (
+    PBM_FileStruct,
+    PBM_Wrangler, 
+    Holder, 
+    Path
+)
 
 def main()->None:
     root:Path = './data'
-    pw = PBM_Wrangler(root)
-    pw.work()
+    pfs       = PBM_FileStruct()
+    holder    = Holder()
+    
+    pw = PBM_Wrangler(pfs, root, holder, .0)
+    pw.work('./src/raw.db', 'wb')
 
 if __name__ == '__main__':
     main()

@@ -79,12 +79,12 @@ plot.wb <- function(df.temp, temp,
   p <- ggplot(df.temp) +
     geom_point(aes(x=u,
                    y=v),
-               colour = "purple",
-               shape = 21,
-               fill = 'white',
-               stroke = .5,
-               alpha = 0.9,
-               size = 2) +
+               colour="purple",
+               shape=21,
+               fill='white',
+               stroke=.5,
+               alpha=.8,
+               size=2) +
   #  coord_cartesian(xlim=c(0.1771, 0.1991),
   #                  ylim=c(0.4247, 0.4467)) +
     scale_x_continuous(breaks = temp.breaks.x,
@@ -128,6 +128,20 @@ plot.wb <- function(df.temp, temp,
   return(p)
 }
 
+plot.save <- function(dstPath) {
+  ggsave(dstPath,
+        width = 10,
+        height = 10,
+        device = 'tiff',
+        dpi = 400)
+}
+
+wb.save.cool <- './report/Rplot_A_cool.tiff'
+wb.save.neutral <- './report/Rplot_B_neutral.tiff'
+wb.save.warm <- './report/Rplot_C_warm.tiff'
+wb.save.expert1 <- './report/Rplot_D_expert1.tiff'
+wb.save.all <- './report/Rplot_wb.tiff'
+
 ### plot WB cool
 p1 <- plot.wb(df.cool,
         'Cool',
@@ -139,6 +153,8 @@ p1 <- plot.wb(df.cool,
         cool.jnd2,
         cool.jnd3)
 
+plot.save(wb.save.cool)
+
 ### plot WB neutral
 p2 <- plot.wb(df.neutral,
         'Neutral',
@@ -149,6 +165,8 @@ p2 <- plot.wb(df.neutral,
         neutral.jnd1,
         neutral.jnd2,
         neutral.jnd3)
+
+plot.save(wb.save.neutral)
 
 
 ### plot WB warm
@@ -162,6 +180,8 @@ p3 <- plot.wb(df.warm,
         warm.jnd2,
         warm.jnd3)
 
+plot.save(wb.save.warm)
+
 ### plot WB expert1
 p4 <- plot.wb(df.expert1,
         'Expert1',
@@ -172,6 +192,8 @@ p4 <- plot.wb(df.expert1,
         expert1.jnd1,
         expert1.jnd2,
         expert1.jnd3)
+
+plot.save(wb.save.expert1)
 
 ### layout 01
 p1 + p2
@@ -187,8 +209,4 @@ p3 + p4
     tag_levels = 'A'
   )
 
-ggsave('Rplot_wb.tiff',
-       width = 10,
-       height = 10,
-       device = 'tiff',
-       dpi = 400)
+plot.save(wb.save.all)

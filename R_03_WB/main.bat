@@ -13,9 +13,19 @@ goto :eof
 :main
 	call :copy_right
 	
-	set path=".\main.py"
-	d:\DevEnv\WPy32-3741\python-3.7.4\python.exe %path%
-
+	echo === Wrangling ===
+	set python="D:\DevEnv\WPy32-3741\python-3.7.4\python.exe"
+	set pyscript=".\main.py"
+	%python% %pyscript%
+	
+	echo.
+	
+	echo === Visualization ===
+	set r="D:\DevEnv\R-Portable\App\R-Portable\bin\Rscript.exe"
+	set rscript=".\wb.R"
+	%r% -e setwd('.')
+	%r% --no-save --slave %rscript%
+	
 	echo.
 	pause
 goto :eof

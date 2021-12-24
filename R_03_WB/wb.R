@@ -1,14 +1,19 @@
+#!/usr/bin/Rscript
+
 ### SSVE Pmod White Balance Trial 
 ### Effectiveness confirmation
 ### by ZL, 20211222
 
+
 #require(reticulate)
-require(ggplot2)
-require(patchwork)
+library(ggplot2)
+library(patchwork)
 ### create clean data
 #reticulate::use_python('D:/DevEnv/WPy32-3741/python-3.7.4/python.exe')
 #reticulate::install_miniconda()
 #reticulate::py_run_file('main.py')
+
+print("start visualizing..")
 
 ### premise
 calc.du <- function(jnd, angle, du.target){
@@ -196,17 +201,19 @@ p4 <- plot.wb(df.expert1,
 plot.save(wb.save.expert1)
 
 ### layout 01
-p1 + p2
-p3 + p4
+# p1 + p2
+# p3 + p4
 
 ### layout 02
 (p1 | p2) /
   (p3 | p4) +
   plot_annotation(
     title = '[SSVE Pmod/SET] White Balance Confirmation',
-    subtitle = '規格: u\'v\', 0.010 (3JND)',
+    subtitle = 'SPEC: u\'v\', 0.010 (3JND)',
     caption = 'Disclaimer: Non of these plots are insightful @ZL',
     tag_levels = 'A'
   )
 
 plot.save(wb.save.all)
+
+print("successed.")

@@ -36,7 +36,7 @@ def dml(table_name:str, cur:Cursor, act:str)->None:
             ser TEXT,
             date TEXT,
 
-            UNIQUE(LEVEL, R, G, B, x_calc, y_calc, Ycalc, x_target, y_target, Ytarget, STATUS, picmode, ser, date) ON CONFLICT IGNORE
+            UNIQUE(LEVEL, x_calc, y_calc, Ycalc, STATUS, ser, date) ON CONFLICT IGNORE
         );
         """.format(table_name))
     try:

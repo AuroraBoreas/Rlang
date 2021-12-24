@@ -73,7 +73,7 @@ class PBM_Wrangler:
         df:DataFrame = pd.concat(src_df, ignore_index=True, sort=False)
         df.to_csv(f'./src/{color_temp}.csv', index=False)
 
-    def __tocsv(self)->None:
+    def __to_csv(self)->None:
         for color_temp, df_ct in zip(self._holder.colors, self._holder.colorTemps):
             if df_ct: self.__concat(color_temp, df_ct)
 
@@ -83,7 +83,7 @@ class PBM_Wrangler:
         for pbm_file in self._filter():
             self.__read(pbm_file)
             self.__wrangle()
-        self.__tocsv()
+        self.__to_csv()
         self._holder.to_sql(dstDB, table_name)
         # self._holder.to_csv('./src/raw.csv')
         self._holder.reset(how='all')

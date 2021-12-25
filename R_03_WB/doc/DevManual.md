@@ -4,7 +4,7 @@
 
 To ensure effectiveness, PE wanna check log data compared with JND.
 
-This small VBA project helps to accelerate the whole process.
+This project helps to accelerate the whole process.
 
 ## Author
 

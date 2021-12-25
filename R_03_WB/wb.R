@@ -96,7 +96,11 @@ plot.wb <- function(df.temp, temp,
                        minor_breaks = temp.minor.x) +
     scale_y_continuous(breaks = temp.breaks.y,
                        minor_breaks = temp.minor.y) +
-    labs(title=gsub(' ', '', paste('WB::', temp)),
+    labs(title=gsub(' ', '', paste('WB::',
+                                   temp, 
+                                   '(N=',
+                                   length(df.temp$u),
+                                   ')')),
          x="u\'",
          y="v\'") +
     theme(plot.title = element_text(size=8),

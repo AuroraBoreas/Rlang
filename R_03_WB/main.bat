@@ -26,6 +26,9 @@ goto :eof
 	%r% -e setwd('.')
 	%r% --no-save --slave %rscript%
 	
+	set plotwb=".\Rplot_wb.pdf"
+	if exist %plotwb% (start %plotwb%)
+	
 	echo.
 	pause
 goto :eof

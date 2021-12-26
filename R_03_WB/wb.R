@@ -6,8 +6,8 @@
 
 
 #require(reticulate)
-library(ggplot2)
-library(patchwork)
+require(ggplot2)
+require(patchwork)
 ### create clean data
 #reticulate::use_python('D:/DevEnv/WPy32-3741/python-3.7.4/python.exe')
 #reticulate::install_miniconda()
@@ -36,46 +36,6 @@ jnd.ellips <- function(jnd, cTT.u, cTT.v){
   return(df)
 }
 
-cool.jnd1 <- jnd.ellips(0.003, 0.1881, 0.4357)
-cool.jnd2 <- jnd.ellips(0.006, 0.1881, 0.4357)
-cool.jnd3 <- jnd.ellips(0.010, 0.1881, 0.4357)
-cool.breaks.x <- seq(0.1771, 0.1991, 0.001)
-cool.breaks.y <- seq(0.4247, 0.4467, 0.001)
-cool.minor.x <- seq(0.1771, 0.1991, 0.0002)
-cool.minor.y <- seq(0.4247, 0.4467, 0.0002)
-
-neutral.jnd1 <- jnd.ellips(0.003, 0.1901, 0.4467)
-neutral.jnd2 <- jnd.ellips(0.006, 0.1901, 0.4467)
-neutral.jnd3 <- jnd.ellips(0.010, 0.1901, 0.4467)
-neutral.breaks.x <- seq(0.1791, 0.2011, 0.001)
-neutral.breaks.y <- seq(0.4357, 0.4577, 0.001)
-neutral.minor.x <- seq(0.1791, 0.2011, 0.0002)
-neutral.minor.y <- seq(0.4357, 0.4577, 0.0002)
-
-warm.jnd1 <- jnd.ellips(0.003, 0.1939, 0.4549)
-warm.jnd2 <- jnd.ellips(0.006, 0.1939, 0.4549)
-warm.jnd3 <- jnd.ellips(0.010, 0.1939, 0.4549)
-warm.breaks.x <- seq(0.1829, 0.2049, 0.001)
-warm.breaks.y <- seq(0.4439, 0.4659, 0.001)
-warm.minor.x <- seq(0.1829, 0.2049, 0.0002)
-warm.minor.y <- seq(0.4439, 0.4659, 0.0002)
-
-expert1.jnd1 <- jnd.ellips(0.003, 0.1978, 0.469)
-expert1.jnd2 <- jnd.ellips(0.006, 0.1978, 0.469)
-expert1.jnd3 <- jnd.ellips(0.010, 0.1978, 0.469)
-expert1.breaks.x <- seq(0.1868, 0.2088, 0.001)
-expert1.breaks.y <- seq(0.4580, 0.4800, 0.001)
-expert1.minor.x <- seq(0.1868, 0.2088, 0.0002)
-expert1.minor.y <- seq(0.4580, 0.4800, 0.0002)
-
-### read white balance data
-df.cool <- read.csv("./data/COOL.csv")
-df.neutral <- read.csv("./data/NEUTRAL.csv")
-df.warm <- read.csv("./data/WARM.csv")
-df.expert1 <- read.csv("./data/EXPERT1.csv")
-#View(df)
-
-### plot
 plot.wb <- function(df.temp, temp,
                     temp.breaks.x, temp.breaks.y,
                     temp.minor.x, temp.minor.y, 
@@ -130,10 +90,6 @@ plot.wb <- function(df.temp, temp,
                size = 0.2,
                color = 'red'
     )
-#  dev.print(file = gsub(' ', '',paste('Rplot_', temp, '.png')),
-#            device = png,
-#            width = 800,
-#            height = 800)
   return(p)
 }
 
@@ -144,6 +100,46 @@ plot.save <- function(dstPath) {
         device = 'tiff',
         dpi = 400)
 }
+
+### plot
+cool.jnd1 <- jnd.ellips(0.003, 0.1881, 0.4357)
+cool.jnd2 <- jnd.ellips(0.006, 0.1881, 0.4357)
+cool.jnd3 <- jnd.ellips(0.010, 0.1881, 0.4357)
+cool.breaks.x <- seq(0.1771, 0.1991, 0.001)
+cool.breaks.y <- seq(0.4247, 0.4467, 0.001)
+cool.minor.x <- seq(0.1771, 0.1991, 0.0002)
+cool.minor.y <- seq(0.4247, 0.4467, 0.0002)
+
+neutral.jnd1 <- jnd.ellips(0.003, 0.1901, 0.4467)
+neutral.jnd2 <- jnd.ellips(0.006, 0.1901, 0.4467)
+neutral.jnd3 <- jnd.ellips(0.010, 0.1901, 0.4467)
+neutral.breaks.x <- seq(0.1791, 0.2011, 0.001)
+neutral.breaks.y <- seq(0.4357, 0.4577, 0.001)
+neutral.minor.x <- seq(0.1791, 0.2011, 0.0002)
+neutral.minor.y <- seq(0.4357, 0.4577, 0.0002)
+
+warm.jnd1 <- jnd.ellips(0.003, 0.1939, 0.4549)
+warm.jnd2 <- jnd.ellips(0.006, 0.1939, 0.4549)
+warm.jnd3 <- jnd.ellips(0.010, 0.1939, 0.4549)
+warm.breaks.x <- seq(0.1829, 0.2049, 0.001)
+warm.breaks.y <- seq(0.4439, 0.4659, 0.001)
+warm.minor.x <- seq(0.1829, 0.2049, 0.0002)
+warm.minor.y <- seq(0.4439, 0.4659, 0.0002)
+
+expert1.jnd1 <- jnd.ellips(0.003, 0.1978, 0.469)
+expert1.jnd2 <- jnd.ellips(0.006, 0.1978, 0.469)
+expert1.jnd3 <- jnd.ellips(0.010, 0.1978, 0.469)
+expert1.breaks.x <- seq(0.1868, 0.2088, 0.001)
+expert1.breaks.y <- seq(0.4580, 0.4800, 0.001)
+expert1.minor.x <- seq(0.1868, 0.2088, 0.0002)
+expert1.minor.y <- seq(0.4580, 0.4800, 0.0002)
+
+### read white balance data
+df.cool <- read.csv("./data/COOL.csv")
+df.neutral <- read.csv("./data/NEUTRAL.csv")
+df.warm <- read.csv("./data/WARM.csv")
+df.expert1 <- read.csv("./data/EXPERT1.csv")
+#View(df)
 
 wb.save.cool <- './report/Rplot_A_cool.tiff'
 wb.save.neutral <- './report/Rplot_B_neutral.tiff'

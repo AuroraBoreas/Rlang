@@ -368,7 +368,25 @@ code {
 <h1 id="ssve-white-balance-data-visualization">SSVE White Balance Data Visualization</h1>
 <p>20 Dec 2021, SSVE started a trial which is an activity to write White Balance data into Pmod T-Con board.</p>
 <p>To ensure effectiveness, PE wanna check log data compared with JND.</p>
-<p>This small VBA project helps to accelerate the whole process.</p>
+<p>Tthis probject provides two solutions as follows:</p>
+<h2 id="solution-01">Solution 01</h2>
+<p>Sample: N &lt; 1,000</p>
+<p>Toolkits:</p>
+<ol>
+<li>using <code>VBA</code> for data wrangling;</li>
+<li>using <code>Excel</code> for data visualization;</li>
+</ol>
+<p>Usage: to confirm production samples or OQC samples.</p>
+<p>demerits: <code>Excel</code> performance becomes poor when datasets are bigger than 1,000;</p>
+<h2 id="solution-02-python--rlang">Solution 02: <code>Python</code> + <code>Rlang</code></h2>
+<p>Sample: N &gt;= 1,000</p>
+<p>Toolkits:</p>
+<ol>
+<li>using <code>Python3</code> + <code>Pandas</code> for data wrangling</li>
+<li>using <code>Rlang</code> + <code>ggplot2</code> for data Visualization</li>
+</ol>
+<p>(it is rather common in Data Scientist and industry)</p>
+<p>Usage: to confirm enormous data samples(N &gt; 100,000,000) from SSVE production to achieve peak performance.</p>
 <h2 id="author">Author</h2>
 <p>SSVE TVQA member <code>@Zhang Liang</code>, 20211220</p>
 <h2 id="changelog">Changelog</h2>

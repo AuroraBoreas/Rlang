@@ -3,6 +3,12 @@
 @echo off
 goto :main
 
+:clean
+	echo.
+	for /r /d %%d in (*report*) do if exist "%%d" rd /s /q "%%d"
+	mkdir report
+goto :eof
+
 :copy_right
 	echo.
 	echo   === SSVE Pmod/SET White Blance ===
@@ -12,6 +18,7 @@ goto :eof
 
 :main
 	call :copy_right
+	@REM call :clean
 	
 	echo === Wrangling ===
 	set python="D:\DevEnv\WPy32-3741\python-3.7.4\python.exe"
@@ -26,8 +33,7 @@ goto :eof
 	%r% -e setwd('.')
 	%r% --no-save --slave %rscript%
 	
-	set plotwb=".\Rplot_wb.pdf"
-	if exist %plotwb% (start %plotwb%)
+	start Rplots.pdf
 	
 	echo.
 	pause

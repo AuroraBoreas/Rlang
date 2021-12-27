@@ -4,7 +4,33 @@
 
 To ensure effectiveness, PE wanna check log data compared with JND.
 
-This project helps to accelerate the whole process.
+Tthis probject provides two solutions as follows:
+
+## Solution 01
+
+Sample: N < 1,000
+
+Toolkits:
+
+1. using `VBA` for data wrangling;
+2. using `Excel` for data visualization;
+
+Usage: to confirm production samples or OQC samples.
+
+demerits: `Excel` performance becomes poor when datasets are bigger than 1,000;
+
+## Solution 02: `Python` + `Rlang`
+
+Sample: N >= 1,000
+
+Toolkits:
+
+1. using `Python3` + `Pandas` for data wrangling
+2. using `Rlang` + `ggplot2` for data Visualization
+
+(it is rather common in Data Scientist and industry)
+
+Usage: to confirm enormous data samples(N > 100,000,000) from SSVE production to achieve peak performance.
 
 ## Author
 

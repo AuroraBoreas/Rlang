@@ -36,7 +36,7 @@ def dml(table_name:str, cur:Cursor, act:str)->None:
             ser TEXT,
             date TEXT,
 
-            UNIQUE(LEVEL, x_calc, y_calc, Ycalc, STATUS, ser, date) ON CONFLICT IGNORE
+            UNIQUE(LEVEL, R, G, B, picmode, ser, date) ON CONFLICT IGNORE
         );
         """.format(table_name))
     try:
@@ -68,7 +68,7 @@ class Holder(IHolder):
             self.df_temps.clear()
             for df in self.df_cts: df.clear()
 
-    def to_sql(self, dstDB:Path, table_name:Path)->None:
+    def to_sql(self, dstDB:Path, table_name:str)->None:
         heads = [
             'LEVEL',
             'R',
@@ -92,7 +92,7 @@ class Holder(IHolder):
             with sqlite3.connect(dstDB) as conn:
                 cur = conn.cursor()
                 with dml(table_name, cur, 'update'):
-                    df.to_sql(dstDB, conn, if_exists='append', index=False)
+                    df.to_sql(table_name, conn, if_exists='append', index=False)
 
     def to_csv(self, dstPath:Path)->None:
         df:DataFrame = pd.concat(self.df_temps, sort=False, ignore_index=True)

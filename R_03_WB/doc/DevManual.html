@@ -369,7 +369,7 @@ code {
 <p>20 Dec 2021, SSVE started a trial which is an activity to write White Balance data into Pmod T-Con board.</p>
 <p>To ensure effectiveness, PE wanna check log data compared with JND.</p>
 <p>Tthis probject provides two solutions as follows:</p>
-<h2 id="solution-01">Solution 01</h2>
+<h2 id="solution-01-vba--excel">Solution 01: <code>VBA</code> + <code>Excel</code></h2>
 <p>Sample: N &lt; 1,000</p>
 <p>Toolkits:</p>
 <ol>
@@ -566,21 +566,31 @@ plot.wb &lt;- <span class="hljs-keyword">function</span>(df.temp, temp,
   p &lt;- ggplot(df.temp) +
     geom_point(aes(x=u,
                    y=v),
-               colour = <span class="hljs-string">"purple"</span>,
-               shape = <span class="hljs-number">21</span>,
-               fill = <span class="hljs-string">'white'</span>,
-               stroke = <span class="hljs-number">.5</span>,
-               alpha = <span class="hljs-number">0.9</span>,
-               size = <span class="hljs-number">2</span>) +
-  <span class="hljs-comment">#  coord_cartesian(xlim=c(0.1771, 0.1991),</span>
-  <span class="hljs-comment">#                  ylim=c(0.4247, 0.4467)) +</span>
+               colour=<span class="hljs-string">"purple"</span>,
+               shape=<span class="hljs-number">21</span>,
+               fill=<span class="hljs-string">'white'</span>,
+               stroke=<span class="hljs-number">.5</span>,
+               alpha=<span class="hljs-number">.8</span>,
+               size=<span class="hljs-number">2</span>) +
+    <span class="hljs-comment">#  coord_cartesian(xlim=c(0.1771, 0.1991),</span>
+    <span class="hljs-comment">#                  ylim=c(0.4247, 0.4467)) +</span>
     scale_x_continuous(breaks = temp.breaks.x,
                        minor_breaks = temp.minor.x) +
     scale_y_continuous(breaks = temp.breaks.y,
                        minor_breaks = temp.minor.y) +
-    labs(title=gsub(<span class="hljs-string">' '</span>, <span class="hljs-string">''</span>, paste(<span class="hljs-string">'WB::'</span>, temp)),
+    labs(title=gsub(<span class="hljs-string">' '</span>, <span class="hljs-string">''</span>, paste(<span class="hljs-string">'WB::'</span>,
+                                   temp, 
+                                   <span class="hljs-string">'(N='</span>,
+                                   length(df.temp$u),
+                                   <span class="hljs-string">')'</span>)),
          x=<span class="hljs-string">"u\'"</span>,
          y=<span class="hljs-string">"v\'"</span>) +
+    annotate(geom=<span class="hljs-string">'label'</span>,
+             x=min(temp.jnd3$du)+<span class="hljs-number">0.002</span>,
+             y=max(temp.jnd3$dv)-<span class="hljs-number">0.002</span>,
+             label=<span class="hljs-string">'0.010'</span>,
+             colour=<span class="hljs-string">'red'</span>,
+             size=<span class="hljs-number">2</span>) +
     theme(plot.title = element_text(size=<span class="hljs-number">8</span>),
           <span class="hljs-comment">#panel.grid.major.x = element_blank(),</span>
           <span class="hljs-comment">#panel.grid.major.y = element_blank(),</span>
@@ -591,27 +601,23 @@ plot.wb &lt;- <span class="hljs-keyword">function</span>(df.temp, temp,
           axis.text.x = element_text(angle=<span class="hljs-number">90</span>, size=<span class="hljs-number">5</span>),
           axis.text.y = element_text(size=<span class="hljs-number">5</span>)) +
     geom_path(data=temp.jnd1,
-               aes(x=du,
-                   y=dv),
-               size = <span class="hljs-number">0.2</span>,
-               color = <span class="hljs-string">'blue'</span>
-               ) +
+              aes(x=du,
+                  y=dv),
+              size = <span class="hljs-number">0.2</span>,
+              color = <span class="hljs-string">'blue'</span>
+    ) +
     geom_path(data=temp.jnd2,
-               aes(x=du,
-                   y=dv),
-               size = <span class="hljs-number">0.2</span>,
-               color = <span class="hljs-string">'blue'</span>
+              aes(x=du,
+                  y=dv),
+              size = <span class="hljs-number">0.2</span>,
+              color = <span class="hljs-string">'blue'</span>
     ) +
     geom_path(data=temp.jnd3,
-               aes(x=du,
-                   y=dv),
-               size = <span class="hljs-number">0.2</span>,
-               color = <span class="hljs-string">'red'</span>
+              aes(x=du,
+                  y=dv),
+              size = <span class="hljs-number">0.2</span>,
+              color = <span class="hljs-string">'red'</span>
     )
-<span class="hljs-comment">#  dev.print(file = gsub(' ', '',paste('Rplot_', temp, '.png')),</span>
-<span class="hljs-comment">#            device = png,</span>
-<span class="hljs-comment">#            width = 800,</span>
-<span class="hljs-comment">#            height = 800)</span>
   <span class="hljs-keyword">return</span>(p)
 }
 

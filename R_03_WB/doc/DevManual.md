@@ -6,7 +6,7 @@ To ensure effectiveness, PE wanna check log data compared with JND.
 
 Tthis probject provides two solutions as follows:
 
-## Solution 01
+## Solution 01: `VBA` + `Excel`
 
 Sample: N < 1,000
 
@@ -239,21 +239,31 @@ plot.wb <- function(df.temp, temp,
   p <- ggplot(df.temp) +
     geom_point(aes(x=u,
                    y=v),
-               colour = "purple",
-               shape = 21,
-               fill = 'white',
-               stroke = .5,
-               alpha = 0.9,
-               size = 2) +
-  #  coord_cartesian(xlim=c(0.1771, 0.1991),
-  #                  ylim=c(0.4247, 0.4467)) +
+               colour="purple",
+               shape=21,
+               fill='white',
+               stroke=.5,
+               alpha=.8,
+               size=2) +
+    #  coord_cartesian(xlim=c(0.1771, 0.1991),
+    #                  ylim=c(0.4247, 0.4467)) +
     scale_x_continuous(breaks = temp.breaks.x,
                        minor_breaks = temp.minor.x) +
     scale_y_continuous(breaks = temp.breaks.y,
                        minor_breaks = temp.minor.y) +
-    labs(title=gsub(' ', '', paste('WB::', temp)),
+    labs(title=gsub(' ', '', paste('WB::',
+                                   temp, 
+                                   '(N=',
+                                   length(df.temp$u),
+                                   ')')),
          x="u\'",
          y="v\'") +
+    annotate(geom='label',
+             x=min(temp.jnd3$du)+0.002,
+             y=max(temp.jnd3$dv)-0.002,
+             label='0.010',
+             colour='red',
+             size=2) +
     theme(plot.title = element_text(size=8),
           #panel.grid.major.x = element_blank(),
           #panel.grid.major.y = element_blank(),
@@ -264,27 +274,23 @@ plot.wb <- function(df.temp, temp,
           axis.text.x = element_text(angle=90, size=5),
           axis.text.y = element_text(size=5)) +
     geom_path(data=temp.jnd1,
-               aes(x=du,
-                   y=dv),
-               size = 0.2,
-               color = 'blue'
-               ) +
+              aes(x=du,
+                  y=dv),
+              size = 0.2,
+              color = 'blue'
+    ) +
     geom_path(data=temp.jnd2,
-               aes(x=du,
-                   y=dv),
-               size = 0.2,
-               color = 'blue'
+              aes(x=du,
+                  y=dv),
+              size = 0.2,
+              color = 'blue'
     ) +
     geom_path(data=temp.jnd3,
-               aes(x=du,
-                   y=dv),
-               size = 0.2,
-               color = 'red'
+              aes(x=du,
+                  y=dv),
+              size = 0.2,
+              color = 'red'
     )
-#  dev.print(file = gsub(' ', '',paste('Rplot_', temp, '.png')),
-#            device = png,
-#            width = 800,
-#            height = 800)
   return(p)
 }
 

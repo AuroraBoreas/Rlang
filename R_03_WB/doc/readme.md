@@ -4,6 +4,9 @@
 
 To ensure effectiveness, PE wanna check log data compared with JND.
 
+Two solutions are provided in this project.
+
+
 ## Author
 
 SSVE TVQA member `@Zhang Liang`, 20211220

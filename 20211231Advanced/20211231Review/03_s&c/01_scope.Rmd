@@ -1,0 +1,91 @@
+# LEGB
+
+## global environment
+
+```{r}
+
+x <-2; y <- 2
+
+quote(x + y)
+
+eval(x + y)
+
+eval(quote(x + y))
+
+```
+
+## new global environment
+```{r}
+env <- new.env()
+env$x <- 4
+```
+
+### shortcut
+```{r}
+env <- list2env(list(x=4))
+```
+
+### unquote
+```{r}
+eval(x + y, env)
+```
+
+### quoted
+```{r}
+eval(quote(x + y), env)
+```
+
+# R compiler, environment chain
+
+when u call a function in R, you first create an environment for that function
+that environment is where its parameters will be stored,
+and any local variables the function assigns to it will go there as well;
+
+that environment is linked to another environment
+
+["variable -> value]
+
+the concept is really close to class environment in Python;
+
+```{r}
+f <- function(x) 2 * x
+x <- 4
+f(2)
+
+```
+
+["f -> function(x) 2 * x]
+["f -> function(x) 2 * x, "x -> 4]
+[] -> ["f -> function(x) 2 * x, "x -> 4]
+
+before any of the code in the function starts executing,
+the function parameters are put into this environment,
+so when we start executing the code in function f,
+the environment chain looks like this:
+
+["x -> 2] -> ["f -> function(x) 2 * x, "x -> 4]
+
+# <<- operator
+search through the environment chain,
+the same way R does to figure out what expr should evaluate to
+and to update the environment where it finds the variable.
+
+```{r}
+
+counter <- function() {
+    x <- 0
+    return(
+        function() {
+            x <<- 1
+            x
+        }
+    )
+}
+
+counter() # 1
+counter() # 2
+
+```
+
+remind me the `koenig lookup` in C++
+

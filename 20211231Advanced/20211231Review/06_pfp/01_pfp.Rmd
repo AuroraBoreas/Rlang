@@ -1,0 +1,41 @@
+# point-free programming
+
+`point-free` refers to the intermediate states data
+can be in when computing sequence of tramsformation;
+
+`points` refers to are the states the data are in
+after each tramsformation;
+
+`point-free` means we do not focus on these points in any way;
+
+sounds like `pipeline`
+
+# composite
+
+```{r}
+
+h <- function(x) g(f(x))
+
+# or
+h <- function(x) {
+    y <- f(x)
+    g(y)
+}
+
+composite <- function(f, g) function(...) g(f())
+
+f <- function(x) x * 2
+g <- function(...) sum(...)
+c <- composite(f, g)
+
+c(1:3) # 12
+
+```
+
+# magrittr operator %>%
+
+warning: this approach takes only one arg as input
+
+verb(subject, operation)
+
+subject %>% operation

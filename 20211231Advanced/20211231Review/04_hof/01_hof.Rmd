@@ -1,0 +1,99 @@
+# high order function
+a function takes functions as args,
+or return functions;
+
+apply  family of functions
+
+```{r}
+
+sapply() # simply apply output
+vapply() # coerce output and error out if failed
+lapply() # map over lists
+tapply() # work on ragged-table, "jagged" row lengths
+
+```
+
+remind me the similar functions in Python pandas;
+
+```{Python}
+
+apply()    # on colomn or row
+map()      # series
+applymap() # dataframe
+
+```
+
+# currying
+
+point-free programming or tacit programming
+
+```{r}
+
+f <- function(x, y) x + y
+
+f <- function(x) {
+    return(
+        function(y) {
+            x + y
+        }
+    )
+}
+
+# or
+
+h <- function(f) function(x) function(y) f(x, y)
+
+h(`+`)(2)(3)
+
+```
+
+# Thunks and Trampolines
+
+thunk      : https://en.wikipedia.org/wiki/Thunk
+trampoline : https://en.wikipedia.org/wiki/Trampoline_(computing)
+
+### box 1{.box-4 .bg-red}
+
+Historical note:
+There are a couple of onomatopoeic myths circulating about the origin of this term.
+The most common is that it is the sound made by data hitting the stack;
+another holds that the sound is that of the data hitting an accumulator.
+Yet another holds that it is the sound of the expression being unfrozen at argument-evaluation time.
+In fact, according to the inventors,
+it was coined after they realized (in the wee hours after hours of discussion) that the type of an argument in Algol-60 could be figured out in advance with a little compile-time thought,
+simplifying the evaluation machinery.
+
+In other words, it had “already been thought of”; thus it was christened a thunk,
+which is “the past tense of 'think' at two in the morning”.
+
+```{r}
+
+make_thunk <- function(f, ...) {
+  force(f)
+  params <- list(...)
+  function() do.call(f, params)
+}
+
+trampoline <- function(thunk) {
+  while(is.function(thunk)) thunk <- thunk()
+  thunk
+}
+
+thunk_fact <- function(n, continuation=identity) {
+  if(n==1) {
+    continuation(1)
+  } else {
+    new_continuation <- function(result) {
+      make_thunk(continuation, n * result)
+    }
+    make_thunk(thunk_fact, n - 1, new_continuation)
+  }
+}
+
+thunk_fact(1)
+thunk_fact(2)()()
+thunk_fact(3)()()()()
+
+trampoline(thunk_fact(100))
+
+```

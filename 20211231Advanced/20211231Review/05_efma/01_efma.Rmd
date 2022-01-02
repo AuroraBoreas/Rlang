@@ -1,0 +1,11 @@
+# the general sequence object in R is a list
+
+```{r}
+
+Filter()
+Map()
+Reduce()
+
+```
+
+# more in purr library

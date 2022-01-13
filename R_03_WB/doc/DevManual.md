@@ -4,7 +4,7 @@
 
 To ensure effectiveness, PE wanna check log data compared with JND.
 
-Tthis probject provides two solutions as follows:
+This probject provides two solutions as follows:
 
 ## Solution 01: `VBA` + `Excel`
 
@@ -64,13 +64,6 @@ some core functionality as follows.
 
 Private Sub read_PBM_csv(ByVal csv_path As String, ByRef dstWB As Workbook)
     ''' read data from a PBM csv log files at SSVE @ZL, 20211220
-    Const col_x As Integer = 5
-    Const col_y As Integer = 6
-    Const idx_x As Integer = 0
-    Const idx_y As Integer = 1
-    Const sheet_no As Integer = 1
-    Dim cool, neutral, warm, expert1, color_temps
-    
     cool = Array(47, 58, 69, 80)
     neutral = Array(107, 118, 129, 140)
     warm = Array(167, 178, 189, 200)
@@ -78,30 +71,6 @@ Private Sub read_PBM_csv(ByVal csv_path As String, ByRef dstWB As Workbook)
     
     color_temps = Array(cool, neutral, warm, expert1)
     
-    Dim src_wb As Workbook
-    Dim src_ws As Worksheet
-    
-    Set src_wb = GetObject(csv_path)
-    Set src_ws = src_wb.Worksheets(sheet_no)
-
-    Dim i As Integer
-    Const wsn_cool As String = "Cool"
-    Const wsn_neutral As String = "Neutral"
-    Const wsn_warm As String = "Warm"
-    Const wsn_expert1 As String = "Expert1"
-    Dim dstWS_cool As Worksheet: Set dstWS_cool = dstWB.Sheets(wsn_cool)
-    Dim dstWS_neutral As Worksheet: Set dstWS_neutral = dstWB.Sheets(wsn_neutral)
-    Dim dstWS_warm As Worksheet: Set dstWS_warm = dstWB.Sheets(wsn_warm)
-    Dim dstWS_expert1 As Worksheet: Set dstWS_expert1 = dstWB.Sheets(wsn_expert1)
-
-    Const lb As Integer = 0
-    Const ub As Integer = 3
-    Dim dstRow As Integer
-    Const dstCol_dt As Integer = 2
-    Const dstCol_ser As Integer = 3
-    Const dstCol_u As Integer = 7
-    Const dstCol_v As Integer = 8
-
     For i = lb To ub
         dstRow = GetLastRow(dstWS_cool, dstCol_u) + 1
         dstWS_cool.Cells(dstRow, dstCol_ser).Value = dstWS_cool.Cells(dstRow, dstCol_ser).Value & parse_pbm_fp(csv_path)
@@ -161,68 +130,14 @@ using this approach when workload and dataset are enormous (>=1,000);
 
 ```Python
 
-class PBM_Wrangler:
-    dst_folder:Path = './data'
-    engine:str      = 'python'
-
-    def __init__(self, pbm:PBM_FileStruct, src_folder:Path, holder:Holder, offset:float=None) -> None:
-        """initialize an instance with a given folder with source PBM_*.CSV log files inside
-        Args:
-            src_folder (Path): a given folder with source PBM_*.CSV log files inside
-        """
-        self._src_folder  = src_folder
-        self._pbm         = pbm
-        self._holder      = holder
-        self._offset      = offset
-
-    def _filter(self)->Path:
-        for path in sorted(pathlib.Path(self._src_folder).rglob(f'*{self._pbm.fn_ext}')):
-            if path.name.startswith(self._pbm.fn_prefix):
-                yield path.absolute()
-
-    def __read(self, pbm_file:Path)->None:
-        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine=self.engine)
-        df[self._pbm.head_picmode] = self._pbm.temp_names
-        df[self._pbm.head_ser]     = self.__parse(pbm_file, self._pbm.idx_ser)
-        df[self._pbm.head_date]    = self.__parse(pbm_file, self._pbm.idx_date)
-        self._holder.temporary     = df[np.isin(df[self._pbm.head_level], self._pbm.ires)]
-        self._holder.agg(df)
-
-    def __parse(self, pbm_file:Path, idx:int)->str:
-        emptyStr:str = ''
-        return pathlib.Path(pbm_file).name.replace(self._pbm.fn_ext, emptyStr).split(self._pbm.fn_sep)[idx]
-
-    def __categorize(self, color_temp:str, dst_df:List[DataFrame])->None:
-        df:DataFrame         = self._holder.temporary[self._holder.temporary[self._pbm.head_picmode] == color_temp].loc[:, self._pbm.head_xy]
-        df[self._pbm.head_u] = df.apply(lambda df: ColorSpace.xy2u(df[self._pbm.head_x], df[self._pbm.head_y], self._offset), axis=1)
-        df[self._pbm.head_v] = df.apply(lambda df: ColorSpace.xy2v(df[self._pbm.head_x], df[self._pbm.head_y], self._offset), axis=1)
-        fixed_df:DataFrame   = df.loc[:, self._pbm.head_uv]
-        dst_df.append(fixed_df)
-
-    def __wrangle(self)->None:
-        for color_temp, df_ct in zip(self._holder.colors, self._holder.colorTemps):
-            self.__categorize(color_temp, df_ct)
-        self._holder.reset()
-
-    def __concat(self, color_temp:str, src_df:List[DataFrame])->None:
-        df:DataFrame = pd.concat(src_df, ignore_index=True, sort=False)
-        df.to_csv(f'{self.dst_folder}/{color_temp}.csv', index=False)
-
-    def __to_csv(self)->None:
-        for color_temp, df_ct in zip(self._holder.colors, self._holder.colorTemps):
-            if df_ct: self.__concat(color_temp, df_ct)
-
-    @timer
-    def work(self, dstDB:Path, table_name:str)->None:
-        logging.info('start working..')
-        for pbm_file in self._filter():
-            self.__read(pbm_file)
-            self.__wrangle()
-        self.__to_csv()
-        self._holder.to_sql(dstDB, table_name)
-        # self._holder.to_csv('./src/raw.csv')
-        self._holder.reset(how='all')
-        logging.info('successed.')
+def main()->None:
+    root:Path    = './src'
+    pfs          = PBM_FileStruct()
+    holder       = Holder()
+    offset:float = .0
+    
+    pw = PBM_Wrangler(pfs, root, holder, offset)
+    pw.work('./data/wb.db', 'wb')
 
 ```
 

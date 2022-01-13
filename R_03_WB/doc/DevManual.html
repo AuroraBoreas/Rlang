@@ -368,7 +368,7 @@ code {
 <h1 id="ssve-white-balance-data-visualization">SSVE White Balance Data Visualization</h1>
 <p>20 Dec 2021, SSVE started a trial which is an activity to write White Balance data into Pmod T-Con board.</p>
 <p>To ensure effectiveness, PE wanna check log data compared with JND.</p>
-<p>Tthis probject provides two solutions as follows:</p>
+<p>This probject provides two solutions as follows:</p>
 <h2 id="solution-01-vba--excel">Solution 01: <code>VBA</code> + <code>Excel</code></h2>
 <p>Sample: N &lt; 1,000</p>
 <p>Toolkits:</p>
@@ -491,68 +491,14 @@ code {
 <p>using this approach when workload and dataset are enormous (&gt;=1,000);</p>
 <h2 id="implementation">Implementation</h2>
 <pre class="hljs"><code><div>
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PBM_Wrangler</span>:</span>
-    dst_folder:Path = <span class="hljs-string">'./data'</span>
-    engine:str      = <span class="hljs-string">'python'</span>
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, pbm:PBM_FileStruct, src_folder:Path, holder:Holder, offset:float=None)</span> -&gt; <span class="hljs-keyword">None</span>:</span>
-        <span class="hljs-string">"""initialize an instance with a given folder with source PBM_*.CSV log files inside
-        Args:
-            src_folder (Path): a given folder with source PBM_*.CSV log files inside
-        """</span>
-        self._src_folder  = src_folder
-        self._pbm         = pbm
-        self._holder      = holder
-        self._offset      = offset
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_filter</span><span class="hljs-params">(self)</span>-&gt;Path:</span>
-        <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> sorted(pathlib.Path(self._src_folder).rglob(<span class="hljs-string">f'*<span class="hljs-subst">{self._pbm.fn_ext}</span>'</span>)):
-            <span class="hljs-keyword">if</span> path.name.startswith(self._pbm.fn_prefix):
-                <span class="hljs-keyword">yield</span> path.absolute()
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__read</span><span class="hljs-params">(self, pbm_file:Path)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        df:DataFrame               = pd.read_csv(pbm_file, skiprows=self._pbm.dummy_rows, engine=self.engine)
-        df[self._pbm.head_picmode] = self._pbm.temp_names
-        df[self._pbm.head_ser]     = self.__parse(pbm_file, self._pbm.idx_ser)
-        df[self._pbm.head_date]    = self.__parse(pbm_file, self._pbm.idx_date)
-        self._holder.temporary     = df[np.isin(df[self._pbm.head_level], self._pbm.ires)]
-        self._holder.agg(df)
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__parse</span><span class="hljs-params">(self, pbm_file:Path, idx:int)</span>-&gt;str:</span>
-        emptyStr:str = <span class="hljs-string">''</span>
-        <span class="hljs-keyword">return</span> pathlib.Path(pbm_file).name.replace(self._pbm.fn_ext, emptyStr).split(self._pbm.fn_sep)[idx]
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__categorize</span><span class="hljs-params">(self, color_temp:str, dst_df:List[DataFrame])</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        df:DataFrame         = self._holder.temporary[self._holder.temporary[self._pbm.head_picmode] == color_temp].loc[:, self._pbm.head_xy]
-        df[self._pbm.head_u] = df.apply(<span class="hljs-keyword">lambda</span> df: ColorSpace.xy2u(df[self._pbm.head_x], df[self._pbm.head_y], self._offset), axis=<span class="hljs-number">1</span>)
-        df[self._pbm.head_v] = df.apply(<span class="hljs-keyword">lambda</span> df: ColorSpace.xy2v(df[self._pbm.head_x], df[self._pbm.head_y], self._offset), axis=<span class="hljs-number">1</span>)
-        fixed_df:DataFrame   = df.loc[:, self._pbm.head_uv]
-        dst_df.append(fixed_df)
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__wrangle</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        <span class="hljs-keyword">for</span> color_temp, df_ct <span class="hljs-keyword">in</span> zip(self._holder.colors, self._holder.colorTemps):
-            self.__categorize(color_temp, df_ct)
-        self._holder.reset()
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__concat</span><span class="hljs-params">(self, color_temp:str, src_df:List[DataFrame])</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        df:DataFrame = pd.concat(src_df, ignore_index=<span class="hljs-literal">True</span>, sort=<span class="hljs-literal">False</span>)
-        df.to_csv(<span class="hljs-string">f'<span class="hljs-subst">{self.dst_folder}</span>/<span class="hljs-subst">{color_temp}</span>.csv'</span>, index=<span class="hljs-literal">False</span>)
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__to_csv</span><span class="hljs-params">(self)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        <span class="hljs-keyword">for</span> color_temp, df_ct <span class="hljs-keyword">in</span> zip(self._holder.colors, self._holder.colorTemps):
-            <span class="hljs-keyword">if</span> df_ct: self.__concat(color_temp, df_ct)
-
-<span class="hljs-meta">    @timer</span>
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">work</span><span class="hljs-params">(self, dstDB:Path, table_name:str)</span>-&gt;<span class="hljs-keyword">None</span>:</span>
-        logging.info(<span class="hljs-string">'start working..'</span>)
-        <span class="hljs-keyword">for</span> pbm_file <span class="hljs-keyword">in</span> self._filter():
-            self.__read(pbm_file)
-            self.__wrangle()
-        self.__to_csv()
-        self._holder.to_sql(dstDB, table_name)
-        <span class="hljs-comment"># self._holder.to_csv('./src/raw.csv')</span>
-        self._holder.reset(how=<span class="hljs-string">'all'</span>)
-        logging.info(<span class="hljs-string">'successed.'</span>)
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>-&gt;<span class="hljs-keyword">None</span>:</span>
+    root:Path    = <span class="hljs-string">'./src'</span>
+    pfs          = PBM_FileStruct()
+    holder       = Holder()
+    offset:float = <span class="hljs-number">.0</span>
+    
+    pw = PBM_Wrangler(pfs, root, holder, offset)
+    pw.work(<span class="hljs-string">'./data/wb.db'</span>, <span class="hljs-string">'wb'</span>)
 
 </div></code></pre>
 <h2 id="visualization">Visualization</h2>

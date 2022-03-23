@@ -22,3 +22,12 @@ fm_lv_plot <- function(data, pmod_name, ylim) {
 fm_lv_plot(fm65, "FM65", 25)
 fm_lv_plot(fm75, "FM75", 25)
 fm_lv_plot(fm85, "FM85", 25)
+
+library(psych)
+library(knitr)
+dat.df <- t(rbind.data.frame(data.frame(describe(fm65$Lv), row.names = 'fm65'),
+                             data.frame(describe(fm75$Lv), row.names = 'fm75'),
+                             data.frame(describe(fm85$Lv), row.names = 'fm85')
+            ))
+
+kable(dat.df)
